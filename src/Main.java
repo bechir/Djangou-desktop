@@ -14,6 +14,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 public class Main extends Application {
     private String[] langs = {"Francais", "Anglais", "Poulaar", "Wolof", "Soninké"};
 
@@ -46,8 +49,9 @@ public class Main extends Application {
         wordInput.setOnAction(e -> log("Mot: " + wordInput.getText()));
         mainGrid.add(wordInput, 0, 1);
 
-//        Image submitIcon = new Image(getClass().getResourceAsStream("search.png"));
-        Button submit = new Button("Rechercher");
+        Image submitIcon = new Image(new FileInputStream("search.png"));
+        Button submit = new Button("Rechercher", new ImageView(submitIcon));
+        submit.setStyle("-fx-background-color: #007bff; -fx-text-fill: #fff;");
 
         DropShadow btnShadow = new DropShadow();
         btnShadow.setRadius(5.0);
@@ -75,6 +79,8 @@ public class Main extends Application {
         root.setAlignment(mainGrid, Pos.TOP_CENTER);
 
         Button quit = new Button("Quitter");
+        quit.setPadding(new Insets(10, 30, 10, 30));
+        quit.setStyle("-fx-background-color: rgb(221, 60, 75); -fx-text-fill: #fff;");
         quit.setOnAction(e -> primaryStage.close());
         root.getChildren().add(quit);
         root.setAlignment(quit, Pos.BOTTOM_RIGHT);
