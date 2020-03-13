@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -8,6 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.awt.event.ActionEvent;
 import java.lang.reflect.Array;
 
 
@@ -35,13 +37,20 @@ public class Main extends Application {
         ComboBox<String> targetLangChoices = new ComboBox<>();
         targetLangChoices.getItems().addAll(langs);
         targetLangChoices.getSelectionModel().select(1);
-        targetLangChoices.setOnAction(e -> System.out.println("Langue cible: " + targetLangChoices.getSelectionModel().getSelectedItem()));
+        targetLangChoices.setOnAction(e -> log("Langue cible: " + targetLangChoices.getSelectionModel().getSelectedItem()));
         mainGrid.add(targetLangChoices, 1, 0);
 
         TextField wordInput = new TextField("");
         wordInput.setPromptText("Entrez un mot ici");
-        wordInput.setOnAction(e -> System.out.println("Mot: " + wordInput.getText()));
+        wordInput.setOnAction(e -> log("Mot: " + wordInput.getText()));
         mainGrid.add(wordInput, 0, 1);
+
+        Button submit = new Button("Rechercher");
+        submit.setOnMouseClicked((e) -> {
+            log("Langue source: " + sourceLangChoices.getSelectionModel().getSelectedItem());
+            log("Mot à traduire: " + wordInput.getText());
+        });
+        mainGrid.add(submit, 1, 1);
 
         mainGrid.setPadding(new Insets(20));
 
@@ -58,5 +67,9 @@ public class Main extends Application {
 
         primaryStage.setScene(new Scene(root, 420, 480));
         primaryStage.show();
+    }
+
+    private void log(String str) {
+        System.out.println(str);
     }
 }
