@@ -3,6 +3,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -14,11 +15,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.FileInputStream;
 
 public class Main extends Application {
-    private String[] langs = {"Francais", "Anglais", "Poulaar", "Wolof", "Soninké"};
+    ComboBox<String> sourceLangChoices = new ComboBox<>();
+    ComboBox<String> targetLangChoices = new ComboBox<>();
+    Label result = new Label();
+    TextField wordInput = new TextField("");
 
     public static void main(String[] args) {
         launch(args);
@@ -32,21 +35,17 @@ public class Main extends Application {
 
         GridPane mainGrid = new GridPane();
 
-        ComboBox<String> sourceLangChoices = new ComboBox<>();
-        sourceLangChoices.getItems().addAll(langs);
+        sourceLangChoices.getItems().addAll(Translator.getLanguages());
         sourceLangChoices.getSelectionModel().selectFirst();
         sourceLangChoices.setOnAction(e -> System.out.println("Langue: " + sourceLangChoices.getSelectionModel().getSelectedItem()));
         mainGrid.add(sourceLangChoices, 0, 0);
 
-        ComboBox<String> targetLangChoices = new ComboBox<>();
-        targetLangChoices.getItems().addAll(langs);
+        targetLangChoices.getItems().addAll(Translator.getLanguages());
         targetLangChoices.getSelectionModel().select(1);
         targetLangChoices.setOnAction(e -> log("Langue cible: " + targetLangChoices.getSelectionModel().getSelectedItem()));
         mainGrid.add(targetLangChoices, 1, 0);
 
-        TextField wordInput = new TextField("");
         wordInput.setPromptText("Entrez un mot ici");
-        wordInput.setOnAction(e -> log("Mot: " + wordInput.getText()));
         mainGrid.add(wordInput, 0, 1);
 
         Image submitIcon = new Image(new FileInputStream("search.png"));
@@ -64,11 +63,16 @@ public class Main extends Application {
         submit.addEventHandler(MouseEvent.MOUSE_EXITED, (EventHandler<Event>)e -> {
             submit.setEffect(null);
         });
-        submit.setOnMouseClicked((e) -> {
-            log("Langue source: " + sourceLangChoices.getSelectionModel().getSelectedItem());
-            log("Mot à traduire: " + wordInput.getText());
-        });
+
         mainGrid.add(submit, 1, 1);
+
+        Label resultLabel = new Label("Résultats");
+        mainGrid.add(resultLabel, 0, 3);
+        result.setLabelFor(resultLabel);
+        mainGrid.add(result, 0, 4);
+
+        submit.setOnMouseClicked(e -> processTranslation());
+        wordInput.setOnAction(e -> processTranslation());
 
         mainGrid.setPadding(new Insets(20));
 
@@ -91,5 +95,16 @@ public class Main extends Application {
 
     private void log(String str) {
         System.out.println(str);
+    }
+
+    public void processTranslation()
+    {
+        String translation = Translator.translate(
+                Translator.Language.valueOf(sourceLangChoices.getSelectionModel().getSelectedItem()),
+                Translator.Language.valueOf(targetLangChoices.getSelectionModel().getSelectedItem()),
+                wordInput.getText()
+        );
+
+        result.setText("Traduction: " + translation);
     }
 }
